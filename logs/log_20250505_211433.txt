@@ -1,0 +1,20 @@
+=== BugHunt Session Started ===
+
+[+] Pokrećem recon skriptu...
+[+] recon.sh uspešno izvršen.
+
+[+] Pokrećem PoC skripte iz poc_scripts/
+
+[>] Pokrećem: sql_injection_poc.py
+Proof of Concept - SQL Injection
+
+
+[>] Pokrećem: xss_poc.py
+Proof of Concept - XSS
+
+
+[>] Pokrećem: csrf_poc.py
+Proof of Concept - CSRF
+
+
+=== Kraj sesije ===
