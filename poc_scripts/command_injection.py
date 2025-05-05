@@ -1,5 +1,5 @@
 import requests
-from utils.log_utils import log_to_sheet
+from utils.log_utils import log_to_sheet, classify_severity
 
 INJECTION_PAYLOADS = [";cat /etc/passwd", "| cat /etc/passwd", "&& cat /etc/passwd"]
 
@@ -27,7 +27,8 @@ def run_command_injection_scan():
     for url in targets:
         found = test_command_injection(url)
         if found:
-            log_to_sheet(__file__, "\n".join(found))
+            severity = classify_severity("\n".join)
+            log_to_sheet(__file__, "\n".join(found)) + f' | Severity: {{severity}}')
 
 if __name__ == "__main__":
     run_command_injection_scan()

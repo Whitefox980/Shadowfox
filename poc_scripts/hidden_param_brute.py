@@ -1,5 +1,5 @@
 import requests
-from utils.log_utils import log_to_sheet
+from utils.log_utils import log_to_sheet, classify_severity
 
 COMMON_PARAMS = [
     "debug", "admin", "test", "dev", "user", "pass", "config", "include", "file",
@@ -28,7 +28,8 @@ def run_hidden_param_brute():
             if test_param(url, param):
                 log = f"[+] Reflektovan parametar pronađen: {param} na {full_url}"
                 print(log)
-                log_to_sheet(__file__, log)
+                severity = classify_severity(log)
+                log_to_sheet(__file__, log) + f' | Severity: {{severity}}')
 
 if __name__ == "__main__":
     run_hidden_param_brute()

@@ -1,5 +1,5 @@
 import requests
-from utils.log_utils import log_to_sheet
+from utils.log_utils import log_to_sheet, classify_severity
 
 # Primeri zaštićenih putanja koje često zahtevaju autentifikaciju
 PROTECTED_PATHS = [
@@ -27,7 +27,8 @@ def check_auth_bypass(domain):
                 if r.status_code == 200:
                     msg = f"[!] Mogući AUTH BYPASS detektovan: {url} sa header-ima {headers}"
                     print(msg)
-                    log_to_sheet(__file__, msg)
+                    severity = classify_severity(msg)
+                    log_to_sheet(__file__, msg) + f' | Severity: {{severity}}')
             except Exception as e:
                 print(f"[-] Greška: {e}")
 

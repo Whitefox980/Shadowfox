@@ -1,6 +1,6 @@
 import requests
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
-from utils.log_utils import log_to_sheet
+from utils.log_utils import log_to_sheet, classify_severity
 
 SSRF_PROBE = "http://127.0.0.1"  # Možeš koristiti i custom listener ako želiš
 
@@ -19,7 +19,8 @@ def test_ssrf(base_url):
             if r.status_code == 200:
                 msg = f"[!] Moguća SSRF refleksija: {test_url}"
                 print(msg)
-                log_to_sheet(__file__, msg)
+                severity = classify_severity(msg)
+                log_to_sheet(__file__, msg) + f' | Severity: {{severity}}')
         except Exception as e:
             print(f"[-] Greška SSRF za {test_url}: {e}")
 

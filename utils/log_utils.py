@@ -18,3 +18,14 @@ def log_to_sheet(script_path, result):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     row = [now, script_path, result[:500]]  # Ograniči prikaz rezultata na 500 karaktera
     sheet.append_row(row)
+def classify_severity(result: str) -> str:
+    result = result.lower()
+    if "sql" in result or "auth bypass" in result:
+        return "Critical"
+    elif "idor" in result or "rfi" in result:
+        return "High"
+    elif "lfi" in result or "xss" in result:
+        return "Medium"
+    elif "refleksije" in result or "parametar" in result:
+        return "Low"
+    return "Unknown"

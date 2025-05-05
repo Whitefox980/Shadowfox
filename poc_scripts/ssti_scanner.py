@@ -1,5 +1,5 @@
 import requests
-from utils.log_utils import log_to_sheet
+from utils.log_utils import log_to_sheet, classify_severity
 
 SSTI_PAYLOAD = "{{7*7}}"
 SSTI_EVAL = "49"
@@ -17,7 +17,8 @@ def run_ssti_scan():
             if SSTI_EVAL in r.text:
                 log = f"[+] SSTI detektovan: {test_url}"
                 print(log)
-                log_to_sheet(__file__, log)
+                severity = classify_severity(log)
+                log_to_sheet(__file__, log) + f' | Severity: {{severity}}')
             else:
                 print(f"[-] Nema SSTI: {test_url}")
         except:

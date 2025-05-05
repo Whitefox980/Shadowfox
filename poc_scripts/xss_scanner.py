@@ -1,6 +1,6 @@
 import requests
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
-from utils.log_utils import log_to_sheet
+from utils.log_utils import log_to_sheet, classify_severity
 
 XSS_PAYLOAD = "<script>alert(1)</script>"
 
@@ -41,15 +41,18 @@ def run_xss_scan():
             if XSS_PAYLOAD in res.text:
                 rezultat = f"[!] Moguća XSS ranjivost na {url}\nWAF: {waf_info}"
                 print(rezultat)
-                log_to_sheet(__file__, rezultat)
+                severity = classify_severity(rezultat)
+                log_to_sheet(__file__, rezultat) + f' | Severity: {{severity}}')
             else:
                 rezultat = f"[-] Nema refleksije.\nWAF: {waf_info}"
                 print(rezultat)
-                log_to_sheet(__file__, rezultat)
+                severity = classify_severity(rezultat)
+                log_to_sheet(__file__, rezultat) + f' | Severity: {{severity}}')
         except requests.RequestException as e:
             error = f"[X] Greška prilikom slanja zahteva ka {url}: {str(e)}"
             print(error)
-            log_to_sheet(__file__, error)
+            severity = classify_severity(error)
+            log_to_sheet(__file__, error) + f' | Severity: {{severity}}')
 
 if __name__ == "__main__":
     run_xss_scan()

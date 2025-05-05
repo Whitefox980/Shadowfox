@@ -1,5 +1,5 @@
 import requests
-from utils.log_utils import log_to_sheet
+from utils.log_utils import log_to_sheet, classify_severity
 
 ID_RANGE = range(1, 5)  # Za testiranje: menja ID od 1 do 4
 ID_PARAM_KEYS = ["id", "user", "account", "profile", "order"]
@@ -19,7 +19,8 @@ def run_idor_scan():
                     if r.status_code == 200 and "error" not in r.text.lower():
                         log = f"[+] Moguća IDOR ranjivost: {url}"
                         print(log)
-                        log_to_sheet(__file__, log)
+                        severity = classify_severity(log)
+                        log_to_sheet(__file__, log) + f' | Severity: {{severity}}')
                 except:
                     continue
 

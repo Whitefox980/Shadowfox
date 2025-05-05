@@ -1,7 +1,7 @@
 # fajl: poc_scripts/idor_tester.py
 import requests
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
-from utils.log_utils import log_to_sheet
+from utils.log_utils import log_to_sheet, classify_severity
 
 def generate_urls(base_url):
     parsed = urlparse(base_url)
@@ -28,7 +28,8 @@ def run_idor_test():
             r = requests.get(test_url)
             if "user" in r.text or "admin" in r.text or r.status_code == 200:
                 print(f"[!] Mogući IDOR: {test_url}")
-                log_to_sheet(__file__, f"Mogući IDOR: {test_url}")
+                severity = classify_severity(f"Mogući IDOR: {test_url}")
+                log_to_sheet(__file__, f"Mogući IDOR: {test_url}") + f' | Severity: {{severity}}')
 
 if __name__ == "__main__":
     run_idor_test()

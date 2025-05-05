@@ -1,5 +1,5 @@
 import requests
-from utils.log_utils import log_to_sheet
+from utils.log_utils import log_to_sheet, classify_severity
 
 SSRF_PAYLOADS = [
     "http://127.0.0.1", "http://localhost", "http://169.254.169.254"
@@ -19,7 +19,8 @@ def run_ssrf_scan():
                 if r.status_code == 200 and "EC2" in r.text:
                     log = f"[+] SSRF detektovan: {test_url}"
                     print(log)
-                    log_to_sheet(__file__, log)
+                    severity = classify_severity(log)
+                    log_to_sheet(__file__, log) + f' | Severity: {{severity}}')
             except:
                 continue
 

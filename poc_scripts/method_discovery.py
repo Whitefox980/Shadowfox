@@ -1,5 +1,5 @@
 import requests
-from utils.log_utils import log_to_sheet
+from utils.log_utils import log_to_sheet, classify_severity
 
 def load_targets(file_path):
     with open(file_path, "r") as f:
@@ -20,7 +20,8 @@ def run():
     for url in targets:
         print(f"[•] Testiram: {url}")
         rezultat = discover_methods(url)
-        log_to_sheet(__file__, rezultat)
+        severity = classify_severity(rezultat)
+        log_to_sheet(__file__, rezultat) + f' | Severity: {{severity}}')
 
 if __name__ == "__main__":
     run()

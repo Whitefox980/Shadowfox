@@ -1,6 +1,6 @@
 import requests
 from urllib.parse import urlencode
-from utils.log_utils import log_to_sheet
+from utils.log_utils import log_to_sheet, classify_severity
 
 REDIRECT_PAYLOADS = [
     "https://evil.com",
@@ -18,7 +18,8 @@ def test_open_redirect(base_url):
                 location = response.headers.get("Location", "")
                 if "evil.com" in location:
                     print(f"[!] Mogući OPEN REDIRECT: {full_url} => {location}")
-                    log_to_sheet(__file__, f"OPEN REDIRECT: {full_url} => {location}")
+                    severity = classify_severity(f"OPEN REDIRECT: {full_url} => {location}")
+                    log_to_sheet(__file__, f"OPEN REDIRECT: {full_url} => {location}") + f' | Severity: {{severity}}')
             except Exception as e:
                 print(f"[-] Greška: {e} za {full_url}")
 

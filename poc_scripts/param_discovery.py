@@ -1,6 +1,6 @@
 import requests
 from urllib.parse import urlparse, urlunparse
-from utils.log_utils import log_to_sheet
+from utils.log_utils import log_to_sheet, classify_severity
 
 COMMON_PARAMS = ["id", "page", "user", "ref", "lang", "q", "search", "file", "redirect", "url"]
 
@@ -26,7 +26,8 @@ def discover_params(base_url):
         summary = f"[-] Nema otkrivenih reflektovanih GET parametara za {base_url}"
 
     print(summary)
-    log_to_sheet(__file__, summary)
+    severity = classify_severity(summary)
+    log_to_sheet(__file__, summary) + f' | Severity: {{severity}}')
 
 if __name__ == "__main__":
     with open("targets/targets.txt") as f:
