@@ -29,3 +29,25 @@ def classify_severity(result: str) -> str:
     elif "refleksije" in result or "parametar" in result:
         return "Low"
     return "Unknown"
+import json
+
+def log_to_json(vuln_dict, json_path="results/json/vulnerabilities_export.json"):
+    os.makedirs(os.path.dirname(json_path), exist_ok=True)
+
+    try:
+        # Ako fajl postoji, učitaj postojeće ranjivosti
+        if os.path.exists(json_path):
+            with open(json_path, "r") as f:
+                data = json.load(f)
+        else:
+            data = []
+
+        data.append(vuln_dict)
+
+        with open(json_path, "w") as f:
+            json.dump(data, f, indent=4)
+
+        print(f"[+] Ranjivost upisana u JSON: {vuln_dict.get('target')}")
+
+    except Exception as e:
+        print(f"[-] Greška pri upisu u JSON: {str(e)}")
