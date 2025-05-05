@@ -1,1 +1,2 @@
-# Add target URLs/domains here
+http://testphp.vulnweb.com
+http://testphp.vulnweb.com/artists.php?artist=1

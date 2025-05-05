@@ -1,4 +1,19 @@
+# Core engine privatno
+core_engine.py
+secret_config/
 __pycache__/
 data/logs/*.jsonl
 .env
 *.pyc
+# Python
+__pycache__/
+*.pyc
+
+# Termux i logovi
+logs/
+results/
+*.log
+
+# Ključevi
+*.json
+*.pem

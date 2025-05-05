@@ -24,3 +24,18 @@ def main():
 
 if __name__ == "__main__":
     main()
+# 3. Generisanje izveštaja na osnovu rezultata
+log("\n[+] Generišem završni izveštaj...")
+try:
+    subprocess.run(["python", "logics/generate_report.py"], check=True)
+    log("[+] Izveštaj uspešno generisan.")
+except subprocess.CalledProcessError:
+    log("[-] Greška prilikom generisanja izveštaja.")
+# Upload na Google Drive
+log("\n[+] Upload rezultata na Google Drive...")
+try:
+    from drive_upload import upload_results_to_drive
+    upload_results_to_drive()
+    log("[+] Upload uspešan.")
+except Exception as e:
+    log(f"[-] Greska prilikom upload-a: {e}")
