@@ -1,0 +1,5 @@
+[AI TEMPLATE]
+Cilj: Pronađi ranjivosti i generiši PoC.
+Format: markdown
+Upit: {{question}}
+Odgovor:
