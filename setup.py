@@ -1,22 +1,16 @@
-import os
+from pathlib import Path
+import re
 
-# Kreiraj dodatne foldere i šablone ako su potrebni
-os.makedirs("reports", exist_ok=True)
-os.makedirs("targets", exist_ok=True)
-os.makedirs("ai_templates/generated", exist_ok=True)
+poc_dir = Path('poc_scripts')
 
-# Kreiraj početne fajlove
-with open("reports/.gitkeep", "w") as f:
-    f.write("")
+# Obilazi sve .py fajlove u folderu
+for file in poc_dir.glob('*.py'):
+    content = file.read_text()
+    # Ispravlja lošu liniju
+    fixed = re.sub(r"\+ f' \| Severity: \{\{severity\}\}\)'\)", ")", content)
+    fixed = re.sub(r"\+ f' \| Severity: \{\{severity\}\}\)'", "", fixed)  # za slučaj bez zagrade viška
+    # Ispravlja i slučajeve sa + f bez potrebe
+    fixed = re.sub(r"\)\s*\+\s*f' \| Severity: \{\{severity\}\}\''", ")", fixed)
+    file.write_text(fixed)
 
-with open("targets/targets.txt", "w") as f:
-    f.write("# Add target URLs/domains here\n")
-
-with open("ai_templates/generated/README.md", "w") as f:
-    f.write("# Auto-generated AI Templates\n")
-
-# Ažuriraj README
-with open("README.md", "a") as f:
-    f.write("\n\n## New Additions\n- `reports/`: output reports\n- `targets/`: target list\n- `ai_templates/generated/`: dynamic templates")
-
-"Direktorijumi i fajlovi za proširenje su dodati."
+print("Greške su ispravljene u svim fajlovima.")

@@ -19,7 +19,7 @@ def test_open_redirect(base_url):
                 if "evil.com" in location:
                     print(f"[!] Mogući OPEN REDIRECT: {full_url} => {location}")
                     severity = classify_severity(f"OPEN REDIRECT: {full_url} => {location}")
-                    log_to_sheet(__file__, f"OPEN REDIRECT: {full_url} => {location}") + f' | Severity: {{severity}}')
+                    log_to_sheet(__file__, f"OPEN REDIRECT: {full_url} => {location}") 
             except Exception as e:
                 print(f"[-] Greška: {e} za {full_url}")
 

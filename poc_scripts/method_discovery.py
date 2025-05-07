@@ -21,7 +21,7 @@ def run():
         print(f"[•] Testiram: {url}")
         rezultat = discover_methods(url)
         severity = classify_severity(rezultat)
-        log_to_sheet(__file__, rezultat) + f' | Severity: {{severity}}')
+        log_to_sheet(__file__, rezultat) 
 
 if __name__ == "__main__":
     run()

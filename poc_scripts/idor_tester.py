@@ -29,7 +29,7 @@ def run_idor_test():
             if "user" in r.text or "admin" in r.text or r.status_code == 200:
                 print(f"[!] Mogući IDOR: {test_url}")
                 severity = classify_severity(f"Mogući IDOR: {test_url}")
-                log_to_sheet(__file__, f"Mogući IDOR: {test_url}") + f' | Severity: {{severity}}')
+                log_to_sheet(__file__, f"Mogući IDOR: {test_url}") 
 
 if __name__ == "__main__":
     run_idor_test()

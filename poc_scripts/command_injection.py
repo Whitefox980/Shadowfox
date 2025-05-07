@@ -28,7 +28,7 @@ def run_command_injection_scan():
         found = test_command_injection(url)
         if found:
             severity = classify_severity("\n".join)
-            log_to_sheet(__file__, "\n".join(found)) + f' | Severity: {{severity}}')
+            log_to_sheet(__file__, "\n".join(found)) 
 
 if __name__ == "__main__":
     run_command_injection_scan()

@@ -28,7 +28,7 @@ def check_auth_bypass(domain):
                     msg = f"[!] Mogući AUTH BYPASS detektovan: {url} sa header-ima {headers}"
                     print(msg)
                     severity = classify_severity(msg)
-                    log_to_sheet(__file__, msg) + f' | Severity: {{severity}}')
+                    log_to_sheet(__file__, msg) 
             except Exception as e:
                 print(f"[-] Greška: {e}")
 

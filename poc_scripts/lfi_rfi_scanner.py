@@ -17,7 +17,7 @@ def test_lfi_rfi(url):
             if "root:x" in res.text or "[extensions]" in res.text or "base64" in res.text:
                 print(f"[!] Mogući LFI/RFI: {full_url}")
                 severity = classify_severity(f"LFI/RFI: {full_url}")
-                log_to_sheet(__file__, f"LFI/RFI: {full_url}") + f' | Severity: {{severity}}')
+                log_to_sheet(__file__, f"LFI/RFI: {full_url}") 
     except Exception as e:
         print(f"[-] Greška: {e}")
 

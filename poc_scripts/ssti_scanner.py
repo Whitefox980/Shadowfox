@@ -18,7 +18,7 @@ def run_ssti_scan():
                 log = f"[+] SSTI detektovan: {test_url}"
                 print(log)
                 severity = classify_severity(log)
-                log_to_sheet(__file__, log) + f' | Severity: {{severity}}')
+                log_to_sheet(__file__, log) 
             else:
                 print(f"[-] Nema SSTI: {test_url}")
         except:

@@ -42,17 +42,17 @@ def run_xss_scan():
                 rezultat = f"[!] Moguća XSS ranjivost na {url}\nWAF: {waf_info}"
                 print(rezultat)
                 severity = classify_severity(rezultat)
-                log_to_sheet(__file__, rezultat) + f' | Severity: {{severity}}')
+                log_to_sheet(__file__, rezultat) 
             else:
                 rezultat = f"[-] Nema refleksije.\nWAF: {waf_info}"
                 print(rezultat)
                 severity = classify_severity(rezultat)
-                log_to_sheet(__file__, rezultat) + f' | Severity: {{severity}}')
+                log_to_sheet(__file__, rezultat) 
         except requests.RequestException as e:
             error = f"[X] Greška prilikom slanja zahteva ka {url}: {str(e)}"
             print(error)
             severity = classify_severity(error)
-            log_to_sheet(__file__, error) + f' | Severity: {{severity}}')
+            log_to_sheet(__file__, error) 
 
 if __name__ == "__main__":
     run_xss_scan()

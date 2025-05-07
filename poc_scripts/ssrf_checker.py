@@ -20,7 +20,7 @@ def run_ssrf_scan():
                     log = f"[+] SSRF detektovan: {test_url}"
                     print(log)
                     severity = classify_severity(log)
-                    log_to_sheet(__file__, log) + f' | Severity: {{severity}}')
+                    log_to_sheet(__file__, log) 
             except:
                 continue
 

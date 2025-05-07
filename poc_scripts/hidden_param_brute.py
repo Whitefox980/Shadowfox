@@ -29,7 +29,7 @@ def run_hidden_param_brute():
                 log = f"[+] Reflektovan parametar pronađen: {param} na {full_url}"
                 print(log)
                 severity = classify_severity(log)
-                log_to_sheet(__file__, log) + f' | Severity: {{severity}}')
+                log_to_sheet(__file__, log) 
 
 if __name__ == "__main__":
     run_hidden_param_brute()

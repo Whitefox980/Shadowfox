@@ -1,37 +1,42 @@
-import os
+# runner.py
+
 import subprocess
-from datetime import datetime
+import json
+import os
 
-# Log fajl
-log_dir = "logs"
-os.makedirs(log_dir, exist_ok=True)
-log_file = os.path.join(log_dir, f"log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
+CONFIG_PATH = "config/scanners.json"
+POC_PATH = "poc_scripts"
+TARGETS_PATH = "targets/targets.txt"
 
-def log(msg):
-    with open(log_file, "a") as f:
-        f.write(msg + "\n")
-    print(msg)
+def load_targets():
+    with open(TARGETS_PATH, "r") as f:
+        return [line.strip() for line in f if line.strip()]
 
-log("=== BugHunt Session Started ===")
+def load_enabled_scanners():
+    if not os.path.exists(CONFIG_PATH):
+        return []
+    with open(CONFIG_PATH) as f:
+        data = json.load(f)
+        return data.get("active", [])
 
-# 1. Pokretanje recon.sh
-log("\n[+] Pokrećem recon skriptu...")
-try:
-    subprocess.run(["bash", "termux_commands/recon.sh"], check=True)
-    log("[+] recon.sh uspešno izvršen.")
-except subprocess.CalledProcessError:
-    log("[-] Greška prilikom izvršavanja recon.sh")
+def run_scanner(script, target):
+    script_path = os.path.join(POC_PATH, script)
+    if not os.path.isfile(script_path):
+        print(f"[!] Script not found: {script_path}")
+        return
+    print(f"[+] Pokrećem {script} na {target}")
+    try:
+        result = subprocess.run(["python", script_path, target], capture_output=True, text=True)
+        print(result.stdout)
+    except Exception as e:
+        print(f"[!] Greška: {e}")
 
-# 2. Pokretanje svih PoC Python skripti
-log("\n[+] Pokrećem PoC skripte iz poc_scripts/")
-for fname in os.listdir("poc_scripts"):
-    if fname.endswith(".py"):
-        path = os.path.join("poc_scripts", fname)
-        log(f"\n[>] Pokrećem: {fname}")
-        try:
-            output = subprocess.check_output(["python", path], stderr=subprocess.STDOUT)
-            log(output.decode())
-        except subprocess.CalledProcessError as e:
-            log(f"[-] Greška u {fname}: {e.output.decode()}")
+def main():
+    targets = load_targets()
+    scanners = load_enabled_scanners()
+    for target in targets:
+        for scanner in scanners:
+            run_scanner(scanner, target)
 
-log("\n=== Kraj sesije ===")
+if __name__ == "__main__":
+    main()

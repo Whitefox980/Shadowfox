@@ -27,7 +27,7 @@ def discover_params(base_url):
 
     print(summary)
     severity = classify_severity(summary)
-    log_to_sheet(__file__, summary) + f' | Severity: {{severity}}')
+    log_to_sheet(__file__, summary) 
 
 if __name__ == "__main__":
     with open("targets/targets.txt") as f:

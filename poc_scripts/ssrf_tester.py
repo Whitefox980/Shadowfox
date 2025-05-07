@@ -20,7 +20,7 @@ def test_ssrf(base_url):
                 msg = f"[!] Moguća SSRF refleksija: {test_url}"
                 print(msg)
                 severity = classify_severity(msg)
-                log_to_sheet(__file__, msg) + f' | Severity: {{severity}}')
+                log_to_sheet(__file__, msg) 
         except Exception as e:
             print(f"[-] Greška SSRF za {test_url}: {e}")
 

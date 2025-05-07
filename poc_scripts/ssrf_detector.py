@@ -17,7 +17,7 @@ def test_ssrf(base_url):
                 if response.status_code == 200 and "localhost" in response.text.lower():
                     print(f"[!] Mogući SSRF: {full_url}")
                     severity = classify_severity(f"SSRF: {full_url}")
-                    log_to_sheet(__file__, f"SSRF: {full_url}") + f' | Severity: {{severity}}')
+                    log_to_sheet(__file__, f"SSRF: {full_url}") 
             except Exception as e:
                 print(f"[-] Greška za {full_url}: {e}")
 
