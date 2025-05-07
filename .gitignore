@@ -1,19 +1,26 @@
-# Core engine privatno
-core_engine.py
-secret_config/
-__pycache__/
-data/logs/*.jsonl
-.env
-*.pyc
-# Python
+# Python cache
 __pycache__/
 *.pyc
 
-# Termux i logovi
-logs/
-results/
+# SQLite baza
+*.db
+
+# PDF eksporti
+*.pdf
+
+# Node.js moduli
+node_modules/
+
+# Build izlaz
+dist/
+build/
+
+# Vite
+.vite/
+
+# Log fajlovi
 *.log
 
-# Ključevi
-*.json
-*.pem
+# OS fajlovi
+.DS_Store
+Thumbs.db
