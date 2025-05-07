@@ -7,12 +7,57 @@ import json
 import importlib
 from backend.poc_db import init_db
 from backend.poc_generator import router as poc_router
+from backend.targets_api import router as targets_router
+app.include_router(targets_router)
 
 app = FastAPI()
 
 init_db()
 app.include_router(poc_router)
+from fastapi import Request
+from backend.run_scan import run_full_scan
+from fastapi.responses import JSONResponse
+import sqlite3
+@app.get("/api/vuln-stats")
+def vuln_stats():
+    import sqlite3
+    with sqlite3.connect("shadowfox.db") as conn:
+        c = conn.cursor()
+        c.execute("""
+            SELECT vuln, COUNT(*) FROM poc_reports
+            GROUP BY vuln
+            ORDER BY COUNT(*) DESC
+        """)
+        data = c.fetchall()
+    return {"data": data}
+@app.get("/api/dashboard")
+def get_dashboard():
+    with sqlite3.connect("targets.db") as t_conn, sqlite3.connect("shadowfox.db") as p_conn:
+        t_cursor = t_conn.cursor()
+        p_cursor = p_conn.cursor()
 
+        t_cursor.execute("SELECT COUNT(*) FROM targets")
+        targets_count = t_cursor.fetchone()[0]
+
+        p_cursor.execute("SELECT COUNT(*) FROM poc_reports")
+        reports_count = p_cursor.fetchone()[0]
+
+    return JSONResponse({
+        "targets": targets_count,
+        "reports": reports_count,
+        "last_export": "N/A"  # možeš kasnije dodati timestamp iz export loga
+    })
+@app.post("/run-scan")
+async def run_scan(req: Request):
+    data = await req.json()
+    targets = data.get("targets", [])
+    tests = data.get("tests", [])
+
+    if not targets or not tests:
+        return {"error": "Nisu prosleđene mete ili testovi."}
+
+    results = run_full_scan(targets, tests)
+    return {"message": "Skeniranje završeno", "results": results}
 
 # CORS pre bilo koje rute
 app.add_middleware(

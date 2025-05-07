@@ -57,3 +57,8 @@ def export_poc():
 
     c.save()
     return FileResponse(path=pdf_path, filename="poc_export.pdf", media_type="application/pdf")
+@router.get("/api/poc-history")
+def get_poc_history():
+    from backend.poc_store import get_all_poc
+    data = get_all_poc()
+    return {"data": data}

@@ -1,7 +1,34 @@
+
 import React, { useState } from "react";
 import axios from "axios";
 import Meta from "./pages/Meta";
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Dashboard from "./pages/Dashboard";
+import Meta from "./pages/Meta";
+import MetaList from "./pages/MetaList";
+import ScanHistory from "./pages/ScanHistory";
+import Reports from "./pages/Reports";
+import Stats from "./pages/Stats";
+// ...
+<Route path="/stats" element={<Stats />} />
+function App() {
+  return (
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/meta" element={<Meta />} />
+        <Route path="/metas" element={<MetaList />} />
+        <Route path="/history" element={<ScanHistory />} />
+        <Route path="/reports" element={<Reports />} />
+      </Routes>
+    </Router>
+  );
+}
 
+export default App;
 function App() {
   const [h1Reports, setH1Reports] = useState([]);
   const [bugcrowdReports, setBugcrowdReports] = useState([]);

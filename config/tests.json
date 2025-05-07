@@ -1,0 +1,7 @@
+{
+  "available_tests": ["xss_poc", "ssrf_tester", "subdomain_enum"],
+  "ssrf_tester": "SSRF Tester",
+  "xss_scanner": "XSS Scanner",
+  "ssti_scanner": "SSTI Scanner",
+  "subdomain_enum": "Subdomain Enumeration"
+}

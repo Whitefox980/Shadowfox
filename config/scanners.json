@@ -1,0 +1,7 @@
+{
+  "active": [
+    "sql_injection.py",
+    "xss_scanner.py",
+    "subdomain_enum.py"
+  ]
+}
