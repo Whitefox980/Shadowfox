@@ -34,3 +34,7 @@ if __name__ == "__main__":
         urls = [line.strip() for line in f if line.strip()]
         for u in urls:
             discover_params(u)
+
+
+def run(target):
+    return f"[AUTO] Testiran {__name__} na {{target}}"

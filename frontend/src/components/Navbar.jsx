@@ -7,23 +7,21 @@ export default function Navbar() {
   const navItems = [
     { path: "/", label: "Dashboard" },
     { path: "/meta", label: "Meta Unos" },
-    { path: "/metas", label: "Meta Lista" },
+    { path: "/meta-list", label: "Meta Lista" },
     { path: "/history", label: "Scan History" },
     { path: "/reports", label: "PoC Izveštaji" },
-    { path: "/stats", label: "Statistika" }
+    { path: "/stats", label: "Statistika" },
   ];
 
   return (
-    <nav className="bg-black text-white px-4 py-3 border-b border-green>
+    <nav className="bg-black text-white px-4 py-3 border-b border-gray-800">
       <ul className="flex space-x-6 text-sm font-semibold">
         {navItems.map(({ path, label }) => (
           <li key={path}>
             <Link
               to={path}
               className={`hover:text-green-400 pb-1 border-b-2 ${
-                location.pathname === path
-                  ? "border-green-400 text-green-300"
-                  : "border-transparent"
+                location.pathname === path ? "border-green-500" : "border-transparent"
               }`}
             >
               {label}

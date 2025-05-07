@@ -1,41 +1,25 @@
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Meta from "./pages/Meta";
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import { Route, Routes } from "react-router-dom";
+import NotFound from "./pages/NotFound";
+import Sidebar from "./pages/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import Meta from "./pages/Meta";
 import MetaList from "./pages/MetaList";
-import ScanHistory from "./pages/ScanHistory";
 import Reports from "./pages/Reports";
+import Scan from "./pages/Scan";
+import ScanHistory from "./pages/ScanHistory";
+import Settings from "./pages/Settings";
 import Stats from "./pages/Stats";
-// ...
-<Route path="/stats" element={<Stats />} />
-function App() {
-  return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/meta" element={<Meta />} />
-        <Route path="/metas" element={<MetaList />} />
-        <Route path="/history" element={<ScanHistory />} />
-        <Route path="/reports" element={<Reports />} />
-      </Routes>
-    </Router>
-  );
-}
 
-export default App;
-function App() {
+export default function App() {
   const [h1Reports, setH1Reports] = useState([]);
   const [bugcrowdReports, setBugcrowdReports] = useState([]);
 
   const fetchH1 = async () => {
     try {
       const res = await axios.get("http://127.0.0.1:8000/api/h1-reports");
+      if (!res.data || !res.data.reports) throw new Error("Prazan odgovor");
       setH1Reports(res.data.reports || []);
     } catch (error) {
       console.error("Greška kod H1:", error.message);
@@ -45,37 +29,52 @@ function App() {
   const fetchBugcrowd = async () => {
     try {
       const res = await axios.get("http://127.0.0.1:8000/api/bugcrowd-reports");
+      if (!res.data || !res.data.reports) throw new Error("Prazan odgovor");
       setBugcrowdReports(res.data.reports || []);
     } catch (error) {
       console.error("Greška kod Bugcrowd:", error.message);
     }
   };
 
+  const handleScan = async () => {
+    try {
+      const res = await axios.post("/run-scan", {
+        tests: ["xss_poc", "ssrf_tester"],
+      });
+      alert("Skeniranje gotovo: \n" + res.data.output);
+    } catch (err) {
+      alert("Greška pri skeniranju: " + err.message);
+    }
+  };
+
   return (
-    <div className="bg-black min-h-screen text-white p-4">
-      <h1 className="text-2xl font-bold mb-4">Meta ciljevi</h1>
-      <Meta />
+    <>
+      <Sidebar />
+      <div className="p-6 text-white">
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/meta" element={<Meta />} />
+          <Route path="/meta-list" element={<MetaList />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/scan" element={<Scan />} />
+          <Route path="/scanhistory" element={<ScanHistory />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/stats" element={<Stats />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
 
-      <h2 className="text-xl font-bold mt-8">Bug Bounty Testovi</h2>
-      <button
-        onClick={() =>
-          axios
-            .post("http://127.0.0.1:8000/run-scan", {
-              tests: ["xss_poc", "ssrf_tester"], // ili dinamički kasnije
-            })
-            .then((res) => alert(res.data.output))
-            .catch((err) => alert("Greška pri skeniranju: " + err.message))
-        }
-        className="bg-green-700 text-black px-3 py-1 mt-2"
-      >
-        Pokreni skeniranje
-      </button>
+        <h2 className="text-xl font-bold mb-4">Bug Bounty Testovi</h2>
+        <button
+          onClick={handleScan}
+          className="bg-green-700 text-black px-3 py-1 mb-4"
+        >
+          Pokreni skeniranje
+        </button>
 
-      <h2 className="text-xl font-bold mt-8">Bug Bounty API</h2>
-      <div className="flex gap-2 mt-2 mb-4">
+        <h2 className="text-xl font-bold mb-4">Bug Bounty API</h2>
         <button
           onClick={fetchH1}
-          className="bg-blue-700 text-white px-3 py-1"
+          className="bg-blue-700 text-white px-3 py-1 mr-2"
         >
           Učitaj HackerOne
         </button>
@@ -85,25 +84,21 @@ function App() {
         >
           Učitaj Bugcrowd
         </button>
-      </div>
 
-      <div>
-        <h3 className="text-lg font-semibold">H1 Izveštaji:</h3>
-        <ul className="list-disc list-inside text-green-300">
+        <h3 className="mt-4 font-bold">H1 Izveštaji:</h3>
+        <ul>
           {h1Reports.map((r, i) => (
-            <li key={i}>{r.title || JSON.stringify(r)}</li>
+            <li key={i}>{JSON.stringify(r)}</li>
           ))}
         </ul>
 
-        <h3 className="text-lg font-semibold mt-4">Bugcrowd Izveštaji:</h3>
-        <ul className="list-disc list-inside text-purple-300">
+        <h3 className="mt-4 font-bold">Bugcrowd Izveštaji:</h3>
+        <ul>
           {bugcrowdReports.map((r, i) => (
-            <li key={i}>{r.title || JSON.stringify(r)}</li>
+            <li key={i}>{JSON.stringify(r)}</li>
           ))}
         </ul>
       </div>
-    </div>
+    </>
   );
 }
-
-export default App;

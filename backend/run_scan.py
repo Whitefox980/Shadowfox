@@ -1,3 +1,22 @@
+from fastapi import APIRouter, Request
+from backend.run_scan.core import run_full_scan, save_scan_result
+
+router = APIRouter()
+
+@router.post("/api/run-scan")
+async def run_scan_api(request: Request):
+    data = await request.json()
+    targets = data.get("targets", [])
+    tests = data.get("tests", [])
+    
+    if not targets or not tests:
+        return {"error": "Nisu prosleđene mete ili testovi."}
+
+    results = run_full_scan(targets, tests)
+    for r in results:
+        save_scan_result(r.get("target", ""), r.get("test", ""), r.get("result", ""))
+    
+    return {"message": "Skeniranje završeno", "results": results}
 import time
 from backend.poc_store import save_poc
 

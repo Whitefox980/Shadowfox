@@ -3,7 +3,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 # Putanja do JSON fajla
-SERVICE_ACCOUNT_FILE = "boxwood-airport-458920-e1-8dac401546e1.json"
+SERVICE_ACCOUNT_FILE = "boxwood-airport-458920-e1-f271b5abe884.json"
 SHEET_NAME = "BugHuntLog"  # Ovde stavi tačan naziv tvog Google Sheet dokumenta
 
 # Scopes za Sheets i Drive

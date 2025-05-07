@@ -5,7 +5,7 @@ export default function Dashboard() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    axios.get("/api/dashboard").then(res => {
+    axios.get("http://127.0.0.1:8000/api/dashboard").then(res => {
       setData(res.data);
     });
   }, []);

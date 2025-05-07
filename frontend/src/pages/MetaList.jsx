@@ -9,7 +9,7 @@ export default function MetaList() {
   }, []);
 
   const fetchTargets = async () => {
-    const res = await axios.get("/api/targets");
+    const res = await axios.get("http://127.0.0.1:8000/api/targets");
     setTargets(res.data.data);
   };
 

@@ -10,3 +10,7 @@ log_to_sheet("xss_poc.py", "Reflektovani XSS pronađen!")
 # kad ne nađe
 severity = classify_severity("Nema refleksije")
 log_to_sheet("xss_poc.py", "Nema refleksije") 
+
+
+def run(target):
+    return f"[AUTO] Testiran {__name__} na {{target}}"

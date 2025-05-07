@@ -15,3 +15,7 @@ for word in WORDLIST:
             print(f"[-] {url} => {r.status_code}")
     except requests.RequestException as e:
         print(f"[!] ERROR: {e}")
+
+
+def run(target):
+    return f"[AUTO] Testiran {__name__} na {{target}}"

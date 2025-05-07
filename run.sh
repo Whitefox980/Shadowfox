@@ -1,21 +1,5 @@
-#!/bin/bash
+#!/data/data/com.termux/files/usr/bin/bash
 
-echo ">> Pokrećem ShadowFox..."
-
-# Pokreni backend
-echo "[+] Backend startuje..."
-cd backend
-uvicorn main:app --reload &
-BACK_PID=$!
-cd ..
-
-# Pokreni frontend
-echo "[+] Frontend startuje..."
-cd frontend
-npm run dev &
-FRONT_PID=$!
-cd ..
-
-# Čekaj da korisnik prekine
-trap "kill $BACK_PID $FRONT_PID" EXIT
-wait
+cd ~/Shadowfox
+echo "Pokrećem ShadowFox API..."
+uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000

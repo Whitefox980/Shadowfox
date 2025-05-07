@@ -16,3 +16,7 @@ for sub in subdomains:
 with open("reports/found_subdomains.txt", "w") as f:
     for sub in found:
         f.write(sub + "\n")
+
+
+def run(target):
+    return f"[AUTO] Testiran {__name__} na {{target}}"

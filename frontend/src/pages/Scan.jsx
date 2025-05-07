@@ -1,48 +1,40 @@
 import React, { useState } from "react";
-import PocForm from "../components/PocForm";
+import axios from "axios";
 
 export default function Scan() {
-  const [target, setTarget] = useState("");
-  const [scanType, setScanType] = useState("basic");
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleScan = (e) => {
-    e.preventDefault();
-    alert(`Pokrećem ${scanType} skeniranje na: ${target}`);
-    setTarget("");
+  const handleScan = async () => {
+    setLoading(true);
+    try {
+        const response = await axios.post("http://127.0.0.1:8000/run-scan", {
+        targets: ["http://example.com"],
+        tests: ["xss_poc", "ssrf_tester"]
+      });
+      setResults(response.data.results || []);
+    } catch (error) {
+      console.error("Greška u skeniranju:", error);
+    }
+    setLoading(false);
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold mb-4 text-white">Automatski PoC Generator</h1>
-      <PocForm />
+    <div className="p-6 text-white">
+      <h1 className="text-2xl font-bold mb-4">Skeniranje Meta</h1>
+      <button onClick={handleScan} className="bg-blue-600 px-4 py-2 rounded">
+        Pokreni skeniranje
+      </button>
 
-      <div className="p-4 text-green-400 border-t border-green-700">
-        <h2 className="text-xl font-bold mb-4">Skeniranje meta</h2>
-        <form onSubmit={handleScan}>
-          <input
-            type="text"
-            value={target}
-            onChange={(e) => setTarget(e.target.value)}
-            placeholder="Unesi cilj (npr. IP, domen)"
-            className="bg-black border border-green-500 px-2 py-1 mr-2 text-white"
-          />
-          <select
-            value={scanType}
-            onChange={(e) => setScanType(e.target.value)}
-            className="bg-black border border-green-500 px-2 py-1 mr-2 text-white"
-          >
-            <option value="basic">Osnovno</option>
-            <option value="port">Port scan</option>
-            <option value="vuln">Ranji scan</option>
-          </select>
-          <button
-            type="submit"
-            className="bg-green-700 text-black font-bold px-4 py-1"
-          >
-            Skeniraj
-          </button>
-        </form>
-      </div>
+      {loading && <p className="mt-4 text-gray-300">Skeniranje u toku...</p>}
+
+      <ul className="mt-6 space-y-3">
+        {results.map((r, i) => (
+          <li key={i} className="bg-gray-700 p-3 rounded">
+            {r}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

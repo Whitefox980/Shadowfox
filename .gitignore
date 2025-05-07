@@ -27,3 +27,5 @@ Thumbs.db
 .env
 config/boxwood-airport-*.json
 config/*.json
+secrets/
+*.json
