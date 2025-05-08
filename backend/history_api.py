@@ -20,23 +20,18 @@ def get_scan_history():
     return JSONResponse(content={"history": data})
 from datetime import datetime
 
-def save_scan_result(target, test, result):
-    entry = {
+def save_scan_result(target, test_type, result, payload="", notes=""):
+    data = {
         "target": target,
-        "test": test,
-        "result": result,
-        "timestamp": datetime.utcnow().isoformat()
+        "vulnerability": result,
+        "payload": payload,
+        "notes": notes
     }
-
-    file_path = "scan_history.json"
-
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        data = []
-
-    data.append(entry)
-
-    with open(file_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
+    with open("scan_history.json", "r+", encoding="utf-8") as f:
+        try:
+            history = json.load(f)
+        except json.JSONDecodeError:
+            history = []
+        history.append(data)
+        f.seek(0)
+        json.dump(history, f, indent=4, ensure_ascii=False)
