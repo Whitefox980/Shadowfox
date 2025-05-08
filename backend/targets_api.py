@@ -5,13 +5,14 @@ import sqlite3
 from fastapi.responses import JSONResponse
 
 @router.get("/api/targets")
-def get_all_targets():
-    with sqlite3.connect("targets.db") as conn:
-        c = conn.cursor()
-        c.execute("SELECT id, name, url, comment, priority, created_at FROM targets ORDER BY id DESC")
-        results = c.fetchall()
-    return {"data": results}
-
+def list_targets():
+    try:
+        with sqlite3.connect("targets.db") as conn:
+            c = conn.cursor()
+            c.execute("SELECT * FROM targets")
+            return JSONResponse(content={"data": c.fetchall()})
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
 @router.delete("/api/targets/{target_id}")
 def delete_target(target_id: int):
     with sqlite3.connect("targets.db") as conn:

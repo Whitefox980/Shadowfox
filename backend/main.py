@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import os, json, sqlite3
 
+from backend.targets_store import init_targets_db
 from backend.stats_api import router as stats_router
 from backend.run_scan_api import router as scan_router
 from backend.controllers import scanner, hackerone, bugcrowd
@@ -13,8 +14,10 @@ from backend.history_api import save_scan_result
 from backend.run_scan.core import run_full_scan
 from backend.history_api import router as history_router
 
+
+from backend.controllers.bugcrowd import router as bug_router
+from backend.controllers.hackerone import router as h1_router
 app = FastAPI()
-init_db()
 
 # CORS
 app.add_middleware(
@@ -24,8 +27,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+init_targets_db()
 # ROUTERI
+app.include_router(targets_router)
+app.include_router(h1_router)
+app.include_router(bug_router)
 app.include_router(history_router)
 app.include_router(stats_router)
 app.include_router(scan_router)
@@ -92,18 +98,24 @@ def get_tests():
     with open("config/tests.json") as f:
         return JSONResponse(content=json.load(f))
 
-@app.post("/add-target")
-async def add_target(target: str):
-    if target and target not in targets:
-        with open("targets.txt", "a") as f:
-            f.write(target + "\n")
-        targets.append(target)
-        return {"status": "added", "target": target}
-    return {"status": "exists", "target": target}
+from pydantic import BaseModel
 
-@app.get("/get-targets")
-def get_targets():
-    return {"targets": targets}
+class TargetRequest(BaseModel):
+    name: str
+    url: str
+    comment: str
+    priority: str
+
+@app.post("/api/add-target")
+async def add_target(data: TargetRequest):
+    with sqlite3.connect("targets.db") as conn:
+        c = conn.cursor()
+        c.execute(
+            "INSERT INTO targets (name, url, comment, priority) VALUES (?, ?, ?, ?)",
+            (data.name, data.url, data.comment, data.priority)
+        )
+        conn.commit()
+    return {"message": "Meta sačuvana!"}
 
 @app.delete("/api/targets/{target_id}")
 def delete_target(target_id: int):
@@ -142,11 +154,9 @@ async def run_scan(request: Request):
 
 @app.get("/api/scan-history")
 def get_scan_history():
-    try:
-        with open("scan_history.json", "r") as f:
-            data = json.load(f)
-            return JSONResponse(content=data)
-    except FileNotFoundError:
-        return JSONResponse(content=[])
-    except json.JSONDecodeError:
-        return JSONResponse(content=[])
+    import sqlite3
+    with sqlite3.connect("shadowfox.db") as conn:
+        c = conn.cursor()
+        c.execute("SELECT id, timestamp, target, test, result FROM scan_results ORDER BY timestamp DESC")
+        data = c.fetchall()
+    return {"data": data}

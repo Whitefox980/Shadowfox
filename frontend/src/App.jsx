@@ -12,15 +12,7 @@ import ScanHistory from "./pages/ScanHistory";
 import Settings from "./pages/Settings";
 import Stats from "./pages/Stats";
 import ScanTrigger from './components/ScanTrigger';
-
-function App() {
-  return (
-    <div className="bg-gray-900 min-h-screen p-8">
-      <h1 className="text-white text-2xl">ShadowFox Skeniranje</h1>
-      <ScanTrigger />
-    </div>
-  );
-}
+import MetaUnos from './pages/MetaUnos';
 
 export default function App() {
   const [h1Reports, setH1Reports] = useState([]);
@@ -64,12 +56,13 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/meta" element={<Meta />} />
-          <Route path="/meta-list" element={<MetaList />} />
+          <Route path="/metalist" element={<MetaList />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/scan" element={<Scan />} />
           <Route path="/scanhistory" element={<ScanHistory />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/stats" element={<Stats />} />
+          <Route path="/meta-unos" element={<MetaUnos />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
 

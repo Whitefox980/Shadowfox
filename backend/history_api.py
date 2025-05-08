@@ -20,21 +20,32 @@ def get_scan_history():
     return JSONResponse(content={"history": data})
 from datetime import datetime
 
-def save_scan_result(target, test_type, result, payload="", notes=""):
-    data = {
-        "target": target,
-        "vulnerability": result,
-        "payload": payload,
-        "notes": notes
+from datetime import datetime
+from fastapi import Request
+
+@router.post("/api/scan-history/save")
+async def save_scan_result(request: Request):
+    data = await request.json()
+
+    scan_entry = {
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "targets": data.get("targets", []),
+        "tests": data.get("tests", []),
+        "results": data.get("results", [])
     }
-    with open("scan_history.json", "r+", encoding="utf-8") as f:
-        try:
-            history = json.load(f)
-        except json.JSONDecodeError:
-            history = []
-        history.append(data)
-        f.seek(0)
-        json.dump(history, f, indent=4, ensure_ascii=False)
+
+    try:
+        with open("scan_history.json", "r+", encoding="utf-8") as f:
+            try:
+                history = json.load(f)
+            except json.JSONDecodeError:
+                history = []
+            history.append(scan_entry)
+            f.seek(0)
+            json.dump(history, f, indent=4, ensure_ascii=False)
+        return {"message": "Sken rezultat sačuvan."}
+    except Exception as e:
+        return {"error": str(e)}
 @router.post("/api/scan-history/clear")
 def clear_scan_history():
     try:
