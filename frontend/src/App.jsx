@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "@/api/axios";
 import { Route, Routes } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import Sidebar from "./pages/Sidebar";
@@ -12,7 +12,7 @@ import ScanHistory from "./pages/ScanHistory";
 import Settings from "./pages/Settings";
 import Stats from "./pages/Stats";
 import ScanTrigger from './components/ScanTrigger';
-import MetaUnos from './pages/MetaUnos';
+import MetaUnos from "./pages/MetaUnos";
 
 export default function App() {
   const [h1Reports, setH1Reports] = useState([]);
@@ -55,14 +55,13 @@ export default function App() {
       <div className="p-6 text-white">
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/meta" element={<Meta />} />
+          <Route path="/meta" element={<MetaUnos />} />
           <Route path="/metalist" element={<MetaList />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/scan" element={<Scan />} />
           <Route path="/scanhistory" element={<ScanHistory />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/stats" element={<Stats />} />
-          <Route path="/meta-unos" element={<MetaUnos />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
 

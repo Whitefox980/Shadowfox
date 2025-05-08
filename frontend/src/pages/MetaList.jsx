@@ -1,58 +1,51 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import axios from "@/api/axios";
+
+const scanners = [
+  { id: "xss_poc", name: "XSS Proof of Concept", description: "Testiranje XSS ranjivosti" },
+  { id: "ssrf_tester", name: "SSRF Tester", description: "Detekcija server-side request forgery" },
+  { id: "sql_injection", name: "SQL Injection", description: "Ubacivanje SQL upita kroz parametre" },
+  { id: "idor_checker", name: "IDOR Checker", description: "Insecure Direct Object Reference detektor" },
+  { id: "port_scan", name: "Port Scanner", description: "Skener otvorenih portova" },
+];
 
 export default function MetaList() {
-  const [targets, setTargets] = useState([]);
+  const [selected, setSelected] = useState([]);
 
-  const fetchTargets = async () => {
-    try {
-      const res = await axios.get("http://127.0.0.1:8000/api/targets");
-      setTargets(res.data.data);
-    } catch (err) {
-      alert("Greška pri učitavanju meta.");
-      console.error(err);
-    }
+  const toggle = (id) => {
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
   };
 
-  const obrisi = async (id) => {
-    if (!confirm("Obrisati ovu metu?")) return;
+  const handleScan = async () => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/targets/${id}`);
-      fetchTargets();
+      const res = await axios.post("/run-scan", { tests: selected });
+      alert("Skener pokrenut:\n" + res.data.output);
     } catch (err) {
-      alert("Greška pri brisanju.");
-      console.error(err);
+      alert("Greška: " + err.message);
     }
   };
-
-  useEffect(() => {
-    fetchTargets();
-  }, []);
 
   return (
-    <div className="p-6 text-white">
-      <h1 className="text-2xl font-bold mb-4">Unete mete</h1>
-      {targets.length === 0 ? (
-        <p className="text-gray-400">Nema sačuvanih meta.</p>
-      ) : (
-        <ul className="space-y-4">
-          {targets.map((t) => (
-            <li key={t[0]} className="bg-gray-800 p-4 rounded border border-gray-600">
-              <div><strong>Naziv:</strong> {t[1]}</div>
-              <div><strong>URL:</strong> {t[2]}</div>
-              <div><strong>Komentar:</strong> {t[3]}</div>
-              <div><strong>Prioritet:</strong> {t[4]}</div>
-              <div className="text-xs text-gray-400">{t[5]}</div>
-              <button
-                onClick={() => obrisi(t[0])}
-                className="mt-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-              >
-                Obriši
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="p-4 text-white">
+      <h1 className="text-xl mb-4">Lista alata (skenera)</h1>
+      {scanners.map((s) => (
+        <div key={s.id} className="mb-2">
+          <label>
+            <input
+              type="checkbox"
+              checked={selected.includes(s.id)}
+              onChange={() => toggle(s.id)}
+              className="mr-2"
+            />
+            <strong>{s.name}</strong> — <span className="text-sm">{s.description}</span>
+          </label>
+        </div>
+      ))}
+      <button onClick={handleScan} className="mt-4 bg-green-600 px-4 py-2 rounded">
+        Pokreni izabrane alate
+      </button>
     </div>
   );
 }

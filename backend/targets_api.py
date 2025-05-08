@@ -1,3 +1,4 @@
+from backend.targets_store import DB_NAME
 from fastapi import APIRouter
 from pydantic import BaseModel
 from backend.targets_store import save_target, init_targets_db
@@ -7,7 +8,7 @@ from fastapi.responses import JSONResponse
 @router.get("/api/targets")
 def list_targets():
     try:
-        with sqlite3.connect("targets.db") as conn:
+        with sqlite3.connect(DB_NAME) as conn:
             c = conn.cursor()
             c.execute("SELECT * FROM targets")
             return JSONResponse(content={"data": c.fetchall()})
@@ -15,7 +16,7 @@ def list_targets():
         return JSONResponse(content={"error": str(e)}, status_code=500)
 @router.delete("/api/targets/{target_id}")
 def delete_target(target_id: int):
-    with sqlite3.connect("targets.db") as conn:
+    with sqlite3.connect(DB_NAME) as conn:
         c = conn.cursor()
         c.execute("DELETE FROM targets WHERE id = ?", (target_id,))
         conn.commit()

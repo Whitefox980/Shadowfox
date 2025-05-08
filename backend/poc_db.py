@@ -1,18 +1,9 @@
 import sqlite3
 
-DB_NAME = "shadowfox.db"
-
-def init_db():
-    with sqlite3.connect(DB_NAME) as conn:
-        c = conn.cursor()
-        c.execute("""
-            CREATE TABLE IF NOT EXISTS poc_reports (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                target TEXT,
-                vulnerability TEXT,
-                payload TEXT,
-                notes TEXT,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-        conn.commit()
+def get_all_targets():
+    conn = sqlite3.connect("shadowfox.db")
+    c = conn.cursor()
+    c.execute("SELECT id, name, address FROM targets")
+    rows = c.fetchall()
+    conn.close()
+    return [{"id": row[0], "name": row[1], "address": row[2]} for row in rows]

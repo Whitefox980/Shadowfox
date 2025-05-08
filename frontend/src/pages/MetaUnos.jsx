@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axios from "@/api/axios";
 
 export default function MetaUnos() {
-  const [formData, setFormData] = useState({
+  const [meta, setMeta] = useState({
     name: "",
     url: "",
     comment: "",
@@ -10,63 +10,86 @@ export default function MetaUnos() {
   });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setMeta({ ...meta, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post("http://127.0.0.1:8000/api/add-target", formData);
-      alert("Meta uspešno sačuvana!");
-      setFormData({ name: "", url: "", comment: "", priority: "medium" });
-    } catch (error) {
-      alert("Greška pri slanju mete.");
-      console.error(error);
+  const handleSubmit = async () => {
+    if (!meta.name || !meta.url) {
+      alert("Naziv i URL/IP su obavezni.");
+      return;
     }
+
+    try {
+      await axios.post("/add-target", meta);
+      alert("Meta uspešno sačuvana.");
+      setMeta({ name: "", url: "", comment: "", priority: "medium" });
+    } catch (err) {
+      console.error("Greška:", err);
+      alert("Došlo je do greške prilikom čuvanja.");
+    }
+  };
+
+  const clearAll = () => {
+    setMeta({ name: "", url: "", comment: "", priority: "medium" });
   };
 
   return (
     <div className="p-6 text-white">
-      <h1 className="text-2xl font-bold mb-4">Unos Mete</h1>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          type="text"
-          name="name"
-          placeholder="Naziv mete"
-          value={formData.name}
-          onChange={handleChange}
-          className="w-full p-2 text-black"
-        />
-        <input
-          type="text"
-          name="url"
-          placeholder="URL"
-          value={formData.url}
-          onChange={handleChange}
-          className="w-full p-2 text-black"
-        />
-        <input
-          type="text"
-          name="comment"
-          placeholder="Komentar"
-          value={formData.comment}
-          onChange={handleChange}
-          className="w-full p-2 text-black"
-        />
-        <select
-          name="priority"
-          value={formData.priority}
-          onChange={handleChange}
-          className="w-full p-2 text-black"
+      <h2 className="text-2xl font-bold mb-4">Unos nove mete</h2>
+
+      <input
+        type="text"
+        name="name"
+        placeholder="Naziv mete"
+        value={meta.name}
+        onChange={handleChange}
+        className="w-full p-2 mb-3 bg-black border border-gray-500"
+      />
+
+      <input
+        type="text"
+        name="url"
+        placeholder="URL ili IP adresa"
+        value={meta.url}
+        onChange={handleChange}
+        className="w-full p-2 mb-3 bg-black border border-gray-500"
+      />
+
+      <input
+        type="text"
+        name="comment"
+        placeholder="Opis mete"
+        value={meta.comment}
+        onChange={handleChange}
+        className="w-full p-2 mb-3 bg-black border border-gray-500"
+      />
+
+      <select
+        name="priority"
+        value={meta.priority}
+        onChange={handleChange}
+        className="w-full p-2 mb-4 bg-black border border-gray-500"
+      >
+        <option value="low">Nizak prioritet</option>
+        <option value="medium">Srednji prioritet</option>
+        <option value="high">Visok prioritet</option>
+      </select>
+
+      <div className="flex gap-4">
+        <button
+          onClick={handleSubmit}
+          className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded text-black font-bold"
         >
-          <option value="low">Nizak</option>
-          <option value="medium">Srednji</option>
-          <option value="high">Visok</option>
-        </select>
-        <button type="submit" className="bg-green-700 px-4 py-2 text-white">
-          Sačuvaj metu
+          Sačuvaj
         </button>
-      </form>
+
+        <button
+          onClick={clearAll}
+          className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white"
+        >
+          Obriši sve
+        </button>
+      </div>
     </div>
   );
 }

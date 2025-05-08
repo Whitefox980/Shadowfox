@@ -1,3 +1,4 @@
+from backend.targets_store import DB_NAME
 import sqlite3
 
 DB_NAME = "shadowfox.db"
