@@ -11,6 +11,16 @@ import Scan from "./pages/Scan";
 import ScanHistory from "./pages/ScanHistory";
 import Settings from "./pages/Settings";
 import Stats from "./pages/Stats";
+import ScanTrigger from './components/ScanTrigger';
+
+function App() {
+  return (
+    <div className="bg-gray-900 min-h-screen p-8">
+      <h1 className="text-white text-2xl">ShadowFox Skeniranje</h1>
+      <ScanTrigger />
+    </div>
+  );
+}
 
 export default function App() {
   const [h1Reports, setH1Reports] = useState([]);

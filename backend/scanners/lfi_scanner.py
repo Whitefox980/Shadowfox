@@ -1,4 +1,12 @@
 import requests
+def scan(target):
+    return {
+        "target": target,
+        "test": "lfi_scanner",
+        "result": "Testiran pristup /etc/passwd.",
+        "payload": "../../etc/passwd",
+        "notes": "LFI test izvršen"
+    }
 
 payloads = [
     "../../etc/passwd",

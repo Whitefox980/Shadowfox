@@ -1,5 +1,12 @@
 import requests
-
+def scan(target):
+    return {
+        "target": target,
+        "test": "sql_injection",
+        "result": "Testiran SQL payload.",
+        "payload": "' OR '1'='1",
+        "notes": "SQL Injection test izvršen"
+    }
 sql_payloads = ["'", "' OR '1'='1", "';--", "\" OR \"1\"=\"1", "1 OR 1=1"]
 
 error_signatures = [

@@ -1,34 +1,50 @@
 import importlib
-
+from backend.scanners import (
+    xss_poc,
+    sql_injection,
+    lfi_scanner,
+    command_injection,
+    idor_checker
+)
 def run_full_scan(targets, tests):
+    all_tests = {
+        "xss_poc": xss_poc,
+        "sql_injection": sql_injection,
+        "lfi_scanner": lfi_scanner,
+        "command_injection": command_injection,
+        "idor_checker": idor_checker,
+    }
+
+    if "all" in tests:
+        tests = list(all_tests.keys())
+
     results = []
 
     for target in targets:
         for test in tests:
+            if test not in all_tests:
+                results.append({
+                    "target": target,
+                    "test": test,
+                    "result": "Greška: test nije prepoznat",
+                    "payload": "N/A",
+                    "notes": "Nepoznat test"
+                })
+                continue
+
             try:
-                # Dinamički uvozi modul iz scanners foldera
-                module = importlib.import_module(f"backend.scanners.{test}")
-                output = module.scan(target)  # Mora da postoji scan(target) funkcija
-
-                result_text = output.get("result", "Nema rezultata")
-                payload = output.get("payload", "Nema payloada")
-
+                result = all_tests[test].scan(target)
+                results.append(result)
             except Exception as e:
-                result_text = f"Greška: {str(e)}"
-                payload = "N/A"
-
-            results.append({
-                "target": target,
-                "test": test,
-                "result": result_text,
-                "payload": payload,
-                "notes": "Automatski unos"
-            })
+                results.append({
+                    "target": target,
+                    "test": test,
+                    "result": f"Greška: {e}",
+                    "payload": "N/A",
+                    "notes": "Automatski unos"
+                })
 
     return results
-import json
-from datetime import datetime
-
 def save_scan_result(targets, tests, results):
     file_path = "scan_history.json"
     try:

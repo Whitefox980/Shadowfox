@@ -11,6 +11,7 @@ from backend.poc_generator import router as poc_router
 from backend.targets_api import router as targets_router
 from backend.history_api import save_scan_result
 from backend.run_scan.core import run_full_scan
+from backend.history_api import router as history_router
 
 app = FastAPI()
 init_db()
@@ -25,7 +26,7 @@ app.add_middleware(
 )
 
 # ROUTERI
-
+app.include_router(history_router)
 app.include_router(stats_router)
 app.include_router(scan_router)
 app.include_router(poc_router)
@@ -35,6 +36,7 @@ app.include_router(hackerone.router)
 app.include_router(bugcrowd.router)
 
 # Rute: Meta fajl
+
 try:
     with open("targets.txt", "r") as f:
         targets = list(set(line.strip() for line in f.readlines()))

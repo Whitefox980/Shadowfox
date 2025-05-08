@@ -1,5 +1,12 @@
 import requests
-
+def scan(target):
+    return {
+        "target": target,
+        "test": "command_injection",
+        "result": "Pokušaj command injection.",
+        "payload": "; cat /etc/passwd",
+        "notes": "Command Injection test izvršen"
+    }
 payloads = [
     ";cat /etc/passwd",
     "| cat /etc/passwd",

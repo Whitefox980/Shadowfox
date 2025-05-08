@@ -1,45 +1,76 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 export default function ScanHistory() {
   const [history, setHistory] = useState([]);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
-      axios.get("http://127.0.0.1:8000/api/poc-list")
-      .then((res) => {
-        const data = res.data;
-        if (Array.isArray(data.data)) {
-          setHistory(data.data);
-        } else {
-          console.error("Scan history nije niz:", data);
-          setHistory([]);
-        }
-      })
-.catch((err) => {
-  console.error("Greška u istoriji skeniranja:", err.response?.data || err.message);
-  setHistory([]);
-});}, []);
+    const fetchData = () => {
+      axios.get('http://127.0.0.1:8000/api/scan-history')
+        .then(res => {
+          setHistory(res.data.history || []);
+          setLastUpdated(new Date().toLocaleTimeString());
+        })
+        .catch(() => setHistory([]));
+    };
+
+    fetchData(); // initial load
+    const interval = setInterval(fetchData, 20000); // auto refresh
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const clearHistory = async () => {
+    try {
+      await axios.post('http://127.0.0.1:8000/api/scan-history/clear');
+      alert('Istorija obrisana.');
+      setHistory([]);
+    } catch (err) {
+      alert('Došlo je do greške pri brisanju.');
+    }
+  };
+
   return (
-    <div className="p-6 text-white">
-      <h1 className="text-2xl font-bold mb-4">Scan History</h1>
+    <div className="bg-gray-900 text-white p-6 rounded shadow max-w-3xl mx-auto mt-10">
+      <h2 className="text-xl mb-4">Istorija Skeniranja</h2>
+
+      <div className="mb-4">
+        <button
+          onClick={clearHistory}
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+        >
+          Obriši istoriju
+        </button>
+        {lastUpdated && (
+          <p className="text-sm text-gray-400 mt-2">
+            Poslednje osveženo: {lastUpdated}
+          </p>
+        )}
+      </div>
+
       {history.length === 0 ? (
-        <p className="text-gray-400">Nema skeniranja još uvek.</p>
+        <p className="text-gray-400">Nema rezultata.</p>
       ) : (
-        <ul className="space-y-4">
-          {history.map((h, i) => (
-            <li key={i} className="bg-gray-800 p-3 rounded border border-blue-600">
-              <div><strong>Mete:</strong> {h.targets?.join(", ")}</div>
-              <div><strong>Testovi:</strong> {h.tests?.join(", ")}</div>
-              <div><strong>Rezultati:</strong></div>
-              <ul className="ml-4 list-disc text-sm">
-                {h.results?.map((r, j) => (
-                  <li key={j}>{r}</li>
+        <div className="space-y-4 max-h-[500px] overflow-y-auto">
+          {history.map((entry, idx) => (
+            <div key={idx} className="border border-gray-700 p-4 rounded bg-gray-800">
+              <p className="text-sm text-gray-400">Vreme: {entry.timestamp}</p>
+              <p className="text-sm text-gray-400">Meta: {entry.targets.join(', ')}</p>
+              <p className="text-sm text-gray-400">Testovi: {entry.tests.join(', ')}</p>
+              <div className="mt-2 space-y-2">
+                {entry.results.map((r, i) => (
+                  <div key={i} className="p-2 bg-black rounded">
+                    <p><b>Test:</b> {r.test}</p>
+                    <p><b>Rezultat:</b> {r.result}</p>
+                    <p><b>Payload:</b> {r.payload}</p>
+                    <p><b>Beleška:</b> {r.notes}</p>
+                  </div>
                 ))}
-              </ul>
-              <div className="text-xs text-gray-400">{h.timestamp}</div>
-            </li>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
